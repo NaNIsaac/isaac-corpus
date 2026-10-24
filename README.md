@@ -2,43 +2,69 @@
 
 Private-first conversation corpus tooling for **RussellLM**, stylometry, and persona research.
 
-The repository contains **code only**. KakaoTalk exports and generated corpora are ignored by Git and must stay private.
+**Code is public; conversations are not.** KakaoTalk/ChatGPT exports, generated corpora, and attachments are ignored by Git.
 
-## v0
+## What works
 
-- Parse KakaoTalk text exports
-- Preserve multiline messages
-- Mark Russell aliases
-- Generate deterministic message IDs
-- Incrementally merge re-exports without duplicating old messages
-- Store the canonical corpus as compressed Parquet
+- KakaoTalk TXT export parsing
+- multiline message preservation
+- Russell alias labeling
+- deterministic IDs + incremental deduplication
+- Parquet corpus storage
+- ChatGPT `chat.html` parsing
+- canonical branch reconstruction via `current_node -> parent`
+- context → Russell-response dataset building
 
 ## Install
 
 ```powershell
 git clone https://github.com/NaNIsaac/isaac-corpus.git
 cd isaac-corpus
-uv sync
+uv sync --extra dev
+uv run pytest
 ```
 
-## Import a room
+## Incrementally import KakaoTalk
 
 ```powershell
-uv run kakao-import "raw/kakao/KakaoTalkChats.txt" `
-  --conversation-id python-room
+uv run kakao-import "raw/kakao/KakaoTalkChats.txt" --conversation-id python-room
 ```
 
-Re-export the same room later and run the command again. Existing messages are deduplicated; only unseen messages are added. Keep the same `--conversation-id` for the same KakaoTalk room.
+Export the same room again later and rerun the command. Keep the same
+`--conversation-id`; deterministic message IDs prevent old messages from being added twice.
+
+## Import ChatGPT
+
+Put your exported `chat.html` outside Git or under an ignored directory:
+
+```powershell
+uv run chatgpt-import "raw/chatgpt/chat.html"
+```
+
+The importer follows each conversation's selected `current_node` back through its parents.
+Discarded/regenerated branches therefore do not silently become persona training data.
+
+## Persona direction
+
+The intended unit is not merely a Russell sentence. It is:
+
+```text
+conversation context
+→ Russell response
+→ register / relationship / state metadata
+```
+
+That supports retrieval-based RussellLM first, then controlled SFT/LoRA experiments later.
 
 ## Privacy
 
-Never commit KakaoTalk exports, ChatGPT exports, generated Parquet/JSONL corpora, or private attachments. `.gitignore` blocks these by default.
+Never commit raw conversations or generated corpora. The repository's
+`.gitignore` blocks common exports and corpus formats by default.
 
 ## Next
 
-- ChatGPT importer with canonical-branch reconstruction
-- context windows (`previous N -> Russell response`)
-- anonymization/pseudonymization
-- register/relationship labels
-- RussellLM retrieval layer
-- stylometry benchmark
+- pseudonymization/anonymization
+- relationship/register labels
+- retrieval index for RussellLM
+- cross-platform Russell stylometry benchmark
+- incremental import manifest and export watcher
