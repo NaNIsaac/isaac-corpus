@@ -1,5 +1,5 @@
 from pathlib import Path
-from russell_corpus.kakao import parse_export
+from isaac_corpus.kakao import parse_export
 
 def test_parse_multiline_and_alias(tmp_path: Path):
     p = tmp_path / "room.txt"
