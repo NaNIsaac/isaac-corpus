@@ -1,0 +1,14 @@
+# NEVER commit private conversation exports or generated corpora.
+raw/*
+!raw/.gitkeep
+corpus/*
+!corpus/.gitkeep
+*.parquet
+*.jsonl
+*.eml
+*KakaoTalkChats*.txt
+*.zip
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
