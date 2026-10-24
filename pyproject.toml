@@ -1,0 +1,19 @@
+[project]
+name = "isaac-corpus"
+version = "0.1.0"
+description = "Incremental KakaoTalk export importer for persona and stylometry corpora."
+requires-python = ">=3.11"
+dependencies = ["pyarrow>=17"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+kakao-import = "russell_corpus.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
